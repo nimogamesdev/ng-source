@@ -1,0 +1,73 @@
+{
+	"meta": {
+		"image": "spritesheet.png",
+		"size": {"w":408,"h":400},
+		"scale": "1"
+	},
+	"frames": {
+		"thumbs_up.png":
+		{
+			"frame": {"x":0,"y":0,"w":160,"h":160},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":160,"h":160},
+			"sourceSize": {"w":160,"h":160}
+		},
+		"bubble.png":
+		{
+			"frame": {"x":160,"y":0,"w":128,"h":128},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+			"sourceSize": {"w":128,"h":128}
+		},
+		"angry_face.png":
+		{
+			"frame": {"x":0,"y":160,"w":120,"h":120},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":120,"h":120},
+			"sourceSize": {"w":120,"h":120}
+		},
+		"face_with_open_mouth.png":
+		{
+			"frame": {"x":120,"y":160,"w":120,"h":120},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":120,"h":120},
+			"sourceSize": {"w":120,"h":120}
+		},
+		"party_popper.png":
+		{
+			"frame": {"x":288,"y":0,"w":120,"h":120},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":120,"h":120},
+			"sourceSize": {"w":120,"h":120}
+		},
+		"partying_face.png":
+		{
+			"frame": {"x":288,"y":120,"w":120,"h":120},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":120,"h":120},
+			"sourceSize": {"w":120,"h":120}
+		},
+		"slightly_smiling_face.png":
+		{
+			"frame": {"x":0,"y":280,"w":120,"h":120},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":120,"h":120},
+			"sourceSize": {"w":120,"h":120}
+		},
+		"smiling_face_with_sunglasses.png":
+		{
+			"frame": {"x":120,"y":280,"w":120,"h":120},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":120,"h":120},
+			"sourceSize": {"w":120,"h":120}
+		}
+	}
+}

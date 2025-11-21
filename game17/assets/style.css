@@ -1,0 +1,110 @@
+body {
+    padding: 0;
+    margin: 0;
+    background: #1E1C1D; 
+    font-family: "Inter", Arial, sans-serif;
+}
+
+
+#unity-container {
+    position: absolute;
+}
+
+#unity-container.unity-desktop {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#unity-container.unity-mobile {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+
+#unity-canvas {
+    background: #231F20;
+}
+
+.unity-mobile #unity-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+
+#unity-loading-bar {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+
+#logo {
+    width: 220px;
+    height: 90px;
+    background: url('logo.png') no-repeat center;
+    background-size: contain;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+    transform: translate(-25px, -20px);
+}
+
+#unity-progress-bar-empty {
+    width: 160px;
+    height: 20px;
+    background: #3A3A3A;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+#unity-progress-bar-full {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ffffff, #dcdcdc);
+    border-radius: 12px;
+    transition: width 0.25s ease-out;
+}
+
+#unity-footer {
+    position: relative;
+    color: white;
+}
+
+.unity-mobile #unity-footer {
+    display: none;
+}
+
+#unity-build-title {
+    float: right;
+    margin-right: 10px;
+    line-height: 38px;
+    font-size: 18px;
+}
+
+#unity-fullscreen-button {
+    cursor: pointer;
+    float: right;
+    width: 38px;
+    height: 38px;
+    background: url('fullscreen-button.png') no-repeat center;
+    background-size: contain;
+}
+
+/* WARNING */
+#unity-warning {
+    position: absolute;
+    left: 50%;
+    top: 5%;
+    transform: translate(-50%);
+    background: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    display: none;
+}
+

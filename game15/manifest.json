@@ -1,0 +1,33 @@
+{
+    "short_name": "Golf Party",
+    "name": "Golf Party",
+    "icons": [
+      {
+        "src": "/assets/golf/golf_party_180x180.png",
+        "type": "image/png",
+        "sizes": "180x180"
+      },
+      {
+        "src": "/assets/golf/golf_party_192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/assets/golf/golf_party_512x512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "id": "/?source=pwa",
+    "start_url": "/?source=pwa",
+    "background_color": "#F7F2EA",
+    "display": "fullscreen",
+    "orientation": "any",
+    "lang": "en",
+    "scope": "/",
+    "theme_color": "#F7F2EA",
+    "shortcuts": [
+    ],
+    "description": "Play golfparty.io!",
+    "screenshots": []
+  }
