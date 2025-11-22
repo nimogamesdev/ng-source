@@ -1,0 +1,58 @@
+#status {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #161616;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#status-splash {
+    max-height: 100%;
+    max-width: 100%;
+    width: 220px;       
+    height: 90px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+    margin-bottom: 30px;
+}
+
+#status-progress {
+    width: 160px;
+    margin-top: 20px;
+    margin-left: -20px;
+}
+
+#progress-bar-empty {
+    width: 160px;
+    height: 20px;
+    background: #3A3A3A;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#progress-bar-full {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ffffff, #dcdcdc);
+    border-radius: 12px;
+    transition: width 0.25s ease-out;
+}
+
+#loading-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-family: cursive;
+    font-size: 24px;
+    text-align: center;
+    z-index: 10000;
+    margin: 0;
+}

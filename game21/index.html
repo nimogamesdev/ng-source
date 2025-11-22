@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Game 21</title>
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        #unity-container {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        #status {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #161616;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #status-splash {
+            max-height: 100%;
+            max-width: 100%;
+            width: 220px;       
+            height: 90px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+            margin-bottom: 30px;
+        }
+
+        #status-progress {
+            width: 160px;
+            margin-top: 20px;
+        }
+
+        #progress-bar-empty {
+            width: 160px;
+            height: 20px;
+            background: #3A3A3A;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #progress-bar-full {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffffff, #dcdcdc);
+            border-radius: 12px;
+            transition: width 0.25s ease-out;
+        }
+
+        #loading-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: cursive;
+            font-size: 24px;
+            text-align: center;
+            z-index: 10000;
+            margin: 0;
+        }
+
+        #unity-loading-bar {
+            display: none !important;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="status">
+        <img id="status-splash" src="assets/images/logo.png" alt="Game Logo">
+        <div id="status-progress">
+            <div id="progress-bar-empty">
+                <div id="progress-bar-full"></div>
+            </div>
+        </div>
+        <div id="loading-text"></div>
+    </div>
+
+    <div id="unity-container" class="unity-desktop hidden">
+        <canvas id="unity-canvas" width=960 height=600></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+        <div id="unity-warning"> </div>
+    </div>
+
+    <script>
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var statusElement = document.querySelector("#status");
+        var progressBarFull = document.querySelector("#progress-bar-full");
+        var loadingText = document.querySelector("#loading-text");
+        var warningBanner = document.querySelector("#unity-warning");
+
+        function unityShowBanner(msg, type) {}
+
+        function mergeFiles(fileParts, fileType) {
+            let partsLoaded = 0;
+            const totalParts = fileParts.length;
+            
+            return Promise.all(fileParts.map(part => 
+                fetch(part)
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error(`Failed to load ${part}: ${res.status}`);
+                        }
+                        return res.arrayBuffer();
+                    })
+                    .then(buf => {
+                        partsLoaded++;
+                        doneparts++;
+                        const totalProgress = (doneparts / maxparts) * 100;
+                        progressBarFull.style.width = `${totalProgress}%`;
+                        console.log(`Loaded ${partsLoaded}/${totalParts} parts for ${fileType}`);
+                        return buf;
+                    })
+            )).then(buffers => {
+                const mergedBlob = new Blob(buffers);
+                return URL.createObjectURL(mergedBlob);
+            });
+        }
+        
+        let doneparts = 0;
+        let maxparts = 0;
+
+        function getParts(file, start, end) {
+            let parts = [];
+            for (let i = start; i <= end; i++) {
+                parts.push(file + ".part" + i);
+            }
+            maxparts += parts.length;
+            console.log(`Added ${parts.length} parts for ${file}, total parts: ${maxparts}`);
+            return parts;
+        }
+
+        const originalFetch = window.fetch;
+        window.fetch = async function (...args) {
+            const url = args[0];
+            if (typeof url === "string") {
+                if (url.includes("gn-math.github.io/Clip_Secret Tape 2.webm") && f2Url) {
+                    return new Response(f2Url, { status: 200 });
+                } else if (url.includes("gn-math.github.io/Clip_Secret Tape 3.webm") && f3Url) {
+                    return new Response(f3Url, { status: 200 });
+                } else if (url.includes("gn-math.github.io/Clip_Secret Tape 5.webm") && f5Url) {
+                    return new Response(f5Url, { status: 200 });
+                } else if (url.includes("gn-math.github.io/Clip_Secret Tape 6.webm") && f6Url) {
+                    return new Response(f6Url, { status: 200 });
+                }
+            }
+            return originalFetch.apply(this, args);
+        };
+        
+        let f2Url = null;
+        let f6Url = null;
+        let f3Url = null;
+        let f5Url = null;
+        
+        console.log("Starting to load game files...");
+
+        Promise.all([
+            mergeFiles(getParts("Build/Build.wasm", 1, 4), "WASM"),
+            mergeFiles(getParts("Build/Build.data", 1, 63), "Data"),
+            mergeFiles(getParts("gn-math.github.io/Clip_Secret Tape 2.webm", 1, 2), "Video2"),
+            mergeFiles(getParts("gn-math.github.io/Clip_Secret Tape 6.webm", 1, 2), "Video6"),
+            mergeFiles(getParts("gn-math.github.io/Clip_Secret Tape 3.webm", 1, 2), "Video3"),
+            mergeFiles(getParts("gn-math.github.io/Clip_Secret Tape 5.webm", 1, 3), "Video5")
+        ]).then(([wasmUrl, dataUrl, f2, f6, f3, f5]) => {
+            console.log("All files loaded successfully!");
+            
+            f2Url = f2;
+            f6Url = f6;
+            f3Url = f3;
+            f5Url = f5;
+            container.classList.remove("hidden");
+            
+            var buildUrl = "Build";
+            var loaderUrl = buildUrl + "/Build.loader.js";
+            var config = {
+                dataUrl: dataUrl,
+                frameworkUrl: buildUrl + "/Build.framework.js",
+                codeUrl: wasmUrl,
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "MangledMaw",
+                productName: "Amanda The Adventurer",
+                productVersion: "1.6.17b",
+                showBanner: unityShowBanner,
+            };
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                var meta = document.createElement('meta');
+                meta.name = 'viewport';
+                meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+                document.getElementsByTagName('head')[0].appendChild(meta);
+                container.className = "unity-mobile";
+                canvas.className = "unity-mobile";
+            } else {
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    canvas.style.width = window.innerWidth + "px";
+                    canvas.style.height = window.innerHeight + "px";
+                }
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+            }
+            
+            var script = document.createElement("script");
+            script.src = loaderUrl;
+            script.onload = () => {
+                console.log("Unity loader loaded, creating instance...");
+                
+                createUnityInstance(canvas, config, (progress) => {
+                    const unityProgress = progress * 0.5;
+                    const totalProgress = 50 + unityProgress;
+                    progressBarFull.style.width = `${totalProgress}%`;
+                    
+                    console.log(`Unity progress: ${Math.round(progress * 100)}%`);
+                    
+                }).then((unityInstance) => {
+                    console.log("Unity loaded successfully!");
+                    statusElement.classList.add("hidden");
+                    
+                }).catch((error) => {
+                    console.error("Failed to load Unity:", error);
+                    loadingText.textContent = "ERROR LOADING GAME";
+                    loadingText.style.color = "red";
+                });
+            };
+            
+            script.onerror = (error) => {
+                console.error("Failed to load Unity loader:", error);
+                loadingText.textContent = "ERROR LOADING GAME FILES";
+                loadingText.style.color = "red";
+            };
+            
+            document.body.appendChild(script);
+            
+        }).catch((error) => {
+            console.error("Error loading game files:", error);
+            loadingText.textContent = "ERROR LOADING GAME FILES";
+            loadingText.style.color = "red";
+        });
+
+    </script>
+</body>
+</html>
