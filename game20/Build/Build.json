@@ -7,7 +7,7 @@
 "asmCodeUrl": "Cuphead.asm.code.unityweb",
 "asmMemoryUrl": "Cuphead.asm.memory.unityweb",
 "asmFrameworkUrl": "Cuphead.asm.framework.unityweb",
-"TOTAL_MEMORY": 2130706432,
+"TOTAL_MEMORY": 1610612736,
 "graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
 "webglContextAttributes": {"preserveDrawingBuffer": false},
 "splashScreenStyle": "Dark",
