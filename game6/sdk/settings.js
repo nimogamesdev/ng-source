@@ -368,7 +368,7 @@ TGH5.settings = {
 		]
 	},
 	"platform": "poki",
-	"pokisdk": "https://game-cdn.poki.com/scripts/v2/poki-sdk.js",
+	"pokisdk": "./patch/poki-sdk.js",
 	"isExitNotAvailable": true,
 	"pwAnalytics" : {
 		"enabled": false,
