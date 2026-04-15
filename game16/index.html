@@ -23,10 +23,17 @@
 
         gtag('config', 'G-Z9WJ2GW7GE');
     </script>
-    <script>
-        var gameInstance = UnityLoader.instantiate("gameContainer", "./Build/slimeBUILDS.json", {
-            onProgress: UnityProgress
-        });
+    <script defer>
+        function initializeGame() {
+            if (typeof UnityProgress !== 'function') {
+                console.warn('UnityProgress not loaded, using fallback');
+                window.UnityProgress = function() { };
+            }
+            var gameInstance = UnityLoader.instantiate("gameContainer", "./Build/slimeBUILDS.json", {
+                onProgress: UnityProgress
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initializeGame);
     </script>
 </head>
 
