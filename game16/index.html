@@ -109,6 +109,21 @@
                 console.warn('UnityProgress not loaded, using fallback');
                 window.UnityProgress = function() { };
             }
+            
+            // Final domain bypass - intercept any domain checks made by the game
+            window.addEventListener('error', (e) => {
+                if (e.message && (e.message.includes('domain') || e.message.includes('origin'))) {
+                    e.preventDefault();
+                }
+            }, true);
+            
+            // Override any security checks in iframes
+            try {
+                window.top = window;
+                window.parent = window;
+                window.self = window;
+            } catch(e) {}
+            
             var gameInstance = UnityLoader.instantiate("gameContainer", "./Build/slimeBUILDS.json", {
                 onProgress: UnityProgress
             });
