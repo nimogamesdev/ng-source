@@ -9,86 +9,227 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="theme-color" content="#61c79c">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), gyroscope=(), magnetometer=()">
     <title>Slime Rancher Web</title>
     <script>
-        // Comprehensive domain spoofing
-        const fakeLocation = {
-            href: 'https://slimeranchers.com/',
+        // ULTRA-AGGRESSIVE domain spoofing before any scripts load
+        const FAKE_DOMAIN = 'slimeranchers.com';
+        const FAKE_ORIGIN = 'https://slimeranchers.com';
+        const FAKE_URL = 'https://slimeranchers.com/';
+        
+        // Create fake location object that cannot be replaced
+        const fakeLocationObject = {
+            href: FAKE_URL,
             protocol: 'https:',
-            host: 'slimeranchers.com',
-            hostname: 'slimeranchers.com',
+            host: FAKE_DOMAIN,
+            hostname: FAKE_DOMAIN,
             port: '',
             pathname: '/',
             search: '',
             hash: '',
-            origin: 'https://slimeranchers.com',
-            toString: function() { return this.href; }
+            origin: FAKE_ORIGIN,
+            toString: () => FAKE_URL,
+            valueOf: () => FAKE_URL,
+            replace: () => {},
+            reload: () => {},
+            assign: () => {},
+            // Add these to prevent accidental external access
+            href: FAKE_URL,
+            __proto__: {}
         };
         
-        Object.defineProperty(window, 'location', {
-            value: fakeLocation,
-            writable: false
-        });
+        // Replace window.location BEFORE anything else runs
+        try {
+            Object.defineProperty(window, 'location', {
+                value: fakeLocationObject,
+                writable: false,
+                configurable: false
+            });
+        } catch(e) {
+            console.log('[Spoofing] Failed to set window.location:', e);
+        }
         
-        Object.defineProperty(window, 'top', {
-            value: window,
-            writable: false
-        });
+        // Also spoof document.location and document.domain
+        try {
+            Object.defineProperty(document, 'location', {
+                value: fakeLocationObject,
+                writable: false,
+                configurable: false
+            });
+        } catch(e) {}
         
-        Object.defineProperty(window, 'parent', {
-            value: window,
-            writable: false
-        });
+        try {
+            Object.defineProperty(document, 'domain', {
+                value: FAKE_DOMAIN,
+                writable: false,
+                configurable: false
+            });
+        } catch(e) {}
         
-        Object.defineProperty(window, 'self', {
-            value: window,
-            writable: false
-        });
+        try {
+            Object.defineProperty(document, 'URL', {
+                value: FAKE_URL,
+                writable: false,
+                configurable: false
+            });
+        } catch(e) {}
         
-        Object.defineProperty(document, 'domain', {
-            value: 'slimeranchers.com',
-            writable: true
-        });
-        document.domain = 'slimeranchers.com';
+        // Spoof globalThis if available
+        if (typeof globalThis !== 'undefined') {
+            try {
+                Object.defineProperty(globalThis, 'location', {
+                    value: fakeLocationObject,
+                    writable: false,
+                    configurable: false
+                });
+            } catch(e) {}
+        }
         
-        Object.defineProperty(document, 'referrer', {
-            value: 'https://slimeranchers.com/',
-            writable: false
-        });
-        
-        // Intercept fetch
-        const originalFetch = window.fetch;
-        window.fetch = function(resource, config) {
-            if (typeof resource === 'string' && resource.includes('slimeranchers.com') === false) {
-                // Let it through but don't modify
+        // Override window.location properties even on access
+        const locationHandler = {
+            get: (target, prop, receiver) => {
+                if (prop === 'href' || prop === 'host' || prop === 'hostname' || 
+                    prop === 'origin' || prop === 'protocol') {
+                    return fakeLocationObject[prop];
+                }
+                return Reflect.get(target, prop, receiver);
+            },
+            set: (target, prop, value, receiver) => {
+                // Don't allow any changes to location properties
+                return true;
             }
-            return originalFetch.apply(this, arguments);
         };
         
-        // Intercept XMLHttpRequest
-        const originalOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function(method, url, ...args) {
-            if (typeof url === 'string') {
-                this.setRequestHeader('Referer', 'https://slimeranchers.com/');
-                this.setRequestHeader('Origin', 'https://slimeranchers.com');
+        // Create a Proxy for location
+        try {
+            const proxiedLocation = new Proxy(fakeLocationObject, locationHandler);
+            Object.defineProperty(window, 'location', {
+                value: proxiedLocation,
+                writable: false,
+                configurable: false
+            });
+        } catch(e) {}
+        
+        // Set document.domain early
+        try {
+            document.domain = FAKE_DOMAIN;
+        } catch(e) {}
+        
+        // Override document.referrer
+        try {
+            Object.defineProperty(document, 'referrer', {
+                value: FAKE_URL,
+                writable: false,
+                configurable: false
+            });
+        } catch(e) {}
+        
+        // Intercept URL object creation
+        const OriginalURL = window.URL;
+        window.URL = class URL extends OriginalURL {
+            constructor(url, base) {
+                if (url && typeof url === 'string' && url.includes && url.includes(fakeLocationObject.href)) {
+                    url = url.replace(fakeLocationObject.href, FAKE_URL);
+                }
+                super(url, base);
+                // Override getters
+                Object.defineProperty(this, 'hostname', {
+                    value: FAKE_DOMAIN,
+                    writable: false,
+                    configurable: false
+                });
+                Object.defineProperty(this, 'host', {
+                    value: FAKE_DOMAIN,
+                    writable: false,
+                    configurable: false
+                });
+                Object.defineProperty(this, 'origin', {
+                    value: FAKE_ORIGIN,
+                    writable: false,
+                    configurable: false
+                });
             }
-            return originalOpen.apply(this, [method, url, ...args]);
+            get hostname() { return FAKE_DOMAIN; }
+            get host() { return FAKE_DOMAIN; }
+            get origin() { return FAKE_ORIGIN; }
+            get href() { return this._href || FAKE_URL; }
         };
         
-        // Override console methods to suppress domain-related errors
+        // Keep original URL prototype for instanceof checks
+        window.URL.prototype = OriginalURL.prototype;
+        
+        // Intercept XMLHttpRequest completely
+        const OriginalXHR = window.XMLHttpRequest;
+        window.XMLHttpRequest = class XMLHttpRequest extends OriginalXHR {
+            open(method, url, ...args) {
+                this._spoof_url = url;
+                return super.open(method, url, ...args);
+            }
+            setRequestHeader(header, value) {
+                if (header && typeof header === 'string') {
+                    if (header.toLowerCase() === 'referer') {
+                        return super.setRequestHeader(header, FAKE_URL);
+                    }
+                    if (header.toLowerCase() === 'origin') {
+                        return super.setRequestHeader(header, FAKE_ORIGIN);
+                    }
+                }
+                return super.setRequestHeader(header, value);
+            }
+        };
+        
+        // Copy static methods
+        window.XMLHttpRequest.UNSENT = OriginalXHR.UNSENT || 0;
+        window.XMLHttpRequest.OPENED = OriginalXHR.OPENED || 1;
+        window.XMLHttpRequest.HEADERS_RECEIVED = OriginalXHR.HEADERS_RECEIVED || 2;
+        window.XMLHttpRequest.LOADING = OriginalXHR.LOADING || 3;
+        window.XMLHttpRequest.DONE = OriginalXHR.DONE || 4;
+        
+        // Override fetch
+        const OriginalFetch = window.fetch;
+        window.fetch = function(...args) {
+            if (args[1] && typeof args[1] === 'object') {
+                args[1].referrer = FAKE_URL;
+                args[1].referrerPolicy = 'unsafe-url';
+            } else if (!args[1]) {
+                args[1] = {
+                    referrer: FAKE_URL,
+                    referrerPolicy: 'unsafe-url'
+                };
+            }
+            return OriginalFetch.apply(this, args);
+        };
+        
+        // Suppress domain/origin related console messages
+        const originalLog = console.log;
         const originalWarn = console.warn;
         const originalError = console.error;
-        console.warn = function(...args) {
-            if (args.some(arg => String(arg).includes('domain') || String(arg).includes('origin'))) {
-                return;
+        
+        console.log = function(...args) {
+            if (args.some(a => String(a).includes('domain:') || String(a).includes('Current domain:'))) {
+                return originalLog.call(console, 'Current domain: slimeranchers.com');
             }
-            originalWarn.apply(this, args);
+            return originalLog.apply(this, args);
         };
-        console.error = function(...args) {
-            if (args.some(arg => String(arg).includes('domain') || String(arg).includes('origin'))) {
+        
+        console.warn = function(...args) {
+            if (args.some(a => String(a).includes('domain') || String(a).includes('origin') || String(a).includes('Permissions'))) {
                 return;
             }
-            originalError.apply(this, args);
+            return originalWarn.apply(this, args);
+        };
+        
+        console.error = function(...args) {
+            if (args.some(a => String(a).includes('domain') || String(a).includes('origin'))) {
+                return;
+            }
+            return originalError.apply(this, args);
+        };
+        
+        // Pre-set up Emscripten module to use fake domain
+        window.Module = window.Module || {};
+        window.Module.locateFile = function(path) {
+            return path; // Keep default path resolution
         };
     </script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
@@ -110,19 +251,20 @@
                 window.UnityProgress = function() { };
             }
             
-            // Final domain bypass - intercept any domain checks made by the game
-            window.addEventListener('error', (e) => {
-                if (e.message && (e.message.includes('domain') || e.message.includes('origin'))) {
-                    e.preventDefault();
+            // Intercept console.log to change domain logging
+            const originalLog = console.log;
+            console.log = function(...args) {
+                const msg = args[0];
+                if (msg && msg.includes && msg.includes('Current domain:')) {
+                    return originalLog.call(console, 'Current domain: slimeranchers.com');
                 }
-            }, true);
+                return originalLog.apply(this, args);
+            };
             
-            // Override any security checks in iframes
-            try {
-                window.top = window;
-                window.parent = window;
-                window.self = window;
-            } catch(e) {}
+            // Additional domain lock
+            window.location.hostname = 'slimeranchers.com';
+            window.location.host = 'slimeranchers.com';
+            window.location.origin = 'https://slimeranchers.com';
             
             var gameInstance = UnityLoader.instantiate("gameContainer", "./Build/slimeBUILDS.json", {
                 onProgress: UnityProgress
