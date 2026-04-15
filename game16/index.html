@@ -10,7 +10,87 @@
     <meta name="theme-color" content="#61c79c">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Slime Rancher Web</title>
-    <link rel="stylesheet" href="./TemplateData/style.css">
+    <script>
+        // Comprehensive domain spoofing
+        const fakeLocation = {
+            href: 'https://slimeranchers.com/',
+            protocol: 'https:',
+            host: 'slimeranchers.com',
+            hostname: 'slimeranchers.com',
+            port: '',
+            pathname: '/',
+            search: '',
+            hash: '',
+            origin: 'https://slimeranchers.com',
+            toString: function() { return this.href; }
+        };
+        
+        Object.defineProperty(window, 'location', {
+            value: fakeLocation,
+            writable: false
+        });
+        
+        Object.defineProperty(window, 'top', {
+            value: window,
+            writable: false
+        });
+        
+        Object.defineProperty(window, 'parent', {
+            value: window,
+            writable: false
+        });
+        
+        Object.defineProperty(window, 'self', {
+            value: window,
+            writable: false
+        });
+        
+        Object.defineProperty(document, 'domain', {
+            value: 'slimeranchers.com',
+            writable: true
+        });
+        document.domain = 'slimeranchers.com';
+        
+        Object.defineProperty(document, 'referrer', {
+            value: 'https://slimeranchers.com/',
+            writable: false
+        });
+        
+        // Intercept fetch
+        const originalFetch = window.fetch;
+        window.fetch = function(resource, config) {
+            if (typeof resource === 'string' && resource.includes('slimeranchers.com') === false) {
+                // Let it through but don't modify
+            }
+            return originalFetch.apply(this, arguments);
+        };
+        
+        // Intercept XMLHttpRequest
+        const originalOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url, ...args) {
+            if (typeof url === 'string') {
+                this.setRequestHeader('Referer', 'https://slimeranchers.com/');
+                this.setRequestHeader('Origin', 'https://slimeranchers.com');
+            }
+            return originalOpen.apply(this, [method, url, ...args]);
+        };
+        
+        // Override console methods to suppress domain-related errors
+        const originalWarn = console.warn;
+        const originalError = console.error;
+        console.warn = function(...args) {
+            if (args.some(arg => String(arg).includes('domain') || String(arg).includes('origin'))) {
+                return;
+            }
+            originalWarn.apply(this, args);
+        };
+        console.error = function(...args) {
+            if (args.some(arg => String(arg).includes('domain') || String(arg).includes('origin'))) {
+                return;
+            }
+            originalError.apply(this, args);
+        };
+    </script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
     <script src="./TemplateData/UnityProgress.javascript"></script>
     <script src="./Build/UnityLoader.js"></script>
@@ -46,5 +126,5 @@
         <div id="gameContainer" style="width: 960px; height: 600px"></div>
     </div>
 </body>
-<script>if(window!==window.top)document.querySelectorAll(".snubs").forEach(e=>e.style.display="none");</script>
+
 </html>
