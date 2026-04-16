@@ -1,7 +1,7 @@
 {
 "companyName": "Snubs",
 "productName": "Slime Rancher Web",
-"dataUrl": "slimeBUILDS.data.unityweb",
+"dataUrl": "https://raw.githubusercontent.com/nimogamesdev/ng-source/main/game16/Build/slimeBUILDS.data.unityweb",
 "wasmCodeUrl": "slimeBUILDS.wasm.code.unityweb",
 "wasmFrameworkUrl": "slimeBUILDS.wasm.framework.unityweb",
 "TOTAL_MEMORY": 251658240,
