@@ -47,19 +47,26 @@
         const engine = new Engine(GODOT_CONFIG);
 
         function run() {
+            const loadingContainer = document.getElementById('loading-container');
             const loadingText = document.getElementById('loading-text');
             const loadingVideo = document.getElementById('loading-video');
             const statusOverlay = document.getElementById('status');
             const statusProgress = document.getElementById('status-progress');
             const statusNotice = document.getElementById('status-notice');
-            if (loadingText) {
-                loadingText.remove();
-            }
-            if (loadingVideo) {
-                loadingVideo.remove();
-            }
             let initializing = true;
             let statusMode = '';
+
+            function removeLoadingOverlay() {
+                if (loadingText) {
+                    loadingText.remove();
+                }
+                if (loadingVideo) {
+                    loadingVideo.remove();
+                }
+                if (loadingContainer) {
+                    loadingContainer.remove();
+                }
+            }
 
             function setStatusMode(mode) {
                 if (statusMode === mode || !initializing) {
@@ -151,6 +158,7 @@
                     },
                 }).then(() => {
                     setStatusMode('hidden');
+                    removeLoadingOverlay();
                 }, displayFailureNotice);
             }
         };
