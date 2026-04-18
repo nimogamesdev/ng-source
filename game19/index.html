@@ -11,8 +11,13 @@
 </head>
 
 <body>
+    <div id="loading-container">
+        <video id="loading-video" autoplay muted loop playsinline preload="auto">
+            <source src="loading.mp4" type="video/mp4">
+        </video>
+        <div id="loading-text">LOADING...</div>
+    </div>
     <script src="main.js"></script>
-    <div id="loading-text" style="color: white; font-family: cursive; font-size: 48px; text-align: center; margin-top: 20px;">LOADING...</div>
     <canvas id="canvas"> Your browser does not support the canvas tag. </canvas>
     <noscript> Your browser does not support JavaScript. </noscript>
     <div id="status">
@@ -43,10 +48,16 @@
 
         function run() {
             const loadingText = document.getElementById('loading-text');
+            const loadingVideo = document.getElementById('loading-video');
             const statusOverlay = document.getElementById('status');
             const statusProgress = document.getElementById('status-progress');
             const statusNotice = document.getElementById('status-notice');
-            loadingText.remove();
+            if (loadingText) {
+                loadingText.remove();
+            }
+            if (loadingVideo) {
+                loadingVideo.remove();
+            }
             let initializing = true;
             let statusMode = '';
 
