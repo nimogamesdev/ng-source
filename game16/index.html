@@ -12,22 +12,20 @@
     <title>Game 16</title>
     <link rel="stylesheet" href="./TemplateData/style.css">
     <script>
-        // DOMAIN SPOOFING LAYER - Must run BEFORE any game scripts load
-        const FAKE_DOMAIN = 'slimeranchers.com';
-        const FAKE_ORIGIN = 'https://slimeranchers.com';
-        const FAKE_URL = 'https://slimeranchers.com/';
+        const DOMAIN = 'slimeranchers.com';
+        const ORIGIN = 'https://slimeranchers.com';
+        const URL = 'https://slimeranchers.com/';
         
-        // Intercept XMLHttpRequest to fake referer/origin headers
         const OriginalXHR = window.XMLHttpRequest;
         window.XMLHttpRequest = class XMLHttpRequest extends OriginalXHR {
             setRequestHeader(header, value) {
                 if (header && typeof header === 'string') {
                     const lowerHeader = header.toLowerCase();
                     if (lowerHeader === 'referer' || lowerHeader === 'referrer') {
-                        return super.setRequestHeader(header, FAKE_URL);
+                        return super.setRequestHeader(header, URL);
                     }
                     if (lowerHeader === 'origin') {
-                        return super.setRequestHeader(header, FAKE_ORIGIN);
+                        return super.setRequestHeader(header, ORIGIN);
                     }
                 }
                 return super.setRequestHeader(header, value);
@@ -38,7 +36,7 @@
         const OriginalFetch = window.fetch;
         window.fetch = function(url, init) {
             if (!init) init = {};
-            init.referrer = FAKE_URL;
+            init.referrer = URL;
             init.referrerPolicy = 'unsafe-url';
             return OriginalFetch.call(this, url, init);
         };
@@ -49,9 +47,9 @@
             constructor(url, base) {
                 super(url, base);
                 try {
-                    Object.defineProperty(this, 'hostname', { value: FAKE_DOMAIN, writable: false });
-                    Object.defineProperty(this, 'host', { value: FAKE_DOMAIN, writable: false });
-                    Object.defineProperty(this, 'origin', { value: FAKE_ORIGIN, writable: false });
+                    Object.defineProperty(this, 'hostname', { value: DOMAIN, writable: false });
+                    Object.defineProperty(this, 'host', { value: DOMAIN, writable: false });
+                    Object.defineProperty(this, 'origin', { value: ORIGIN, writable: false });
                 } catch(e) {}
             }
         };
@@ -60,7 +58,7 @@
         // Override document properties
         try {
             Object.defineProperty(document, 'domain', {
-                value: FAKE_DOMAIN,
+                value: DOMAIN,
                 writable: true,
                 configurable: true
             });
@@ -68,7 +66,7 @@
         
         try {
             Object.defineProperty(document, 'URL', {
-                value: FAKE_URL,
+                value: URL,
                 writable: false,
                 configurable: true
             });
@@ -105,7 +103,7 @@
         
         // Pre-initialize Emscripten module
         window.Module = window.Module || {};
-        console.log('[Domain Spoofing] Layer initialized for: ' + FAKE_DOMAIN);
+        console.log('[Domain Spoofing] Layer initialized for: ' + DOMAIN);
     </script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
     <script src="TemplateData/UnityProgress.javascript"></script>

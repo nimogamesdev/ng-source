@@ -4,7 +4,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #161616;
+    background-image: url('images/loading.png');
+    background-size: cover;
+    background-position: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
